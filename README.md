@@ -30,4 +30,5 @@ small sphere around that jelly bean will probably have only a few jelly beans
 within the border of that sphere. As the sphere enlarges though, there will 
 be sizes at which that sphere is very unlikely to encounter jellybeans. You
 could think of this as the space in between the jellybeans. This is when a
-dip on the RDF graph occurs. Inversely for the peaks.
+dip on the RDF graph occurs. Inversely for the peaks. Remember to set ignore
+close to true, as this will look at other neighbors besides itself.
