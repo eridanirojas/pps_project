@@ -69,6 +69,7 @@ def sample_done(job):
         directives={"ngpu": 1, "executable": "python -u"}, name="simulation"
 )
 def run_sim(job):
+    import numpy as np
     import flowermd
     from flowermd.base.system import Pack
     from flowermd.base.simulation import Simulaton
@@ -150,6 +151,9 @@ def run_sim(job):
                                logger=logger)
         sim.operations.writers.append(table_file)
         sim.run_NVT(kT=job.sp.kT, n_steps=job.sp.n_steps, tau_kt=tau_kT)
+        numbers = np.loadtxt('log.txt', usecols=(1), skiprows=(1))
+        average_tps = np.mean(numbers)
+        print("Average TPS for n =",job.sp.num_mols, "is", average_tps)
         sim.save_restart_gsd(job.fn("restart.gsd"))
         job.doc["sim_done"] = True
         print("Simulation finished.")
