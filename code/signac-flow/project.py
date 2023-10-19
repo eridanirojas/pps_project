@@ -72,13 +72,13 @@ def run_sim(job):
     import numpy as np
     import flowermd
     from flowermd.base.system import Pack
-    from flowermd.base.simulation import Simulaton
+    from flowermd.base.simulation import Simulation
     with job:
         print("JOB ID NUMBER:")
         print(job.id)
         print("------------------------------------")
         mol_obj_list = []
-        for m in job.sp.molecules:
+        for m in job.sp.molecule:
             mol_cls = getattr(flowermd.library.polymers, job.sp.molecule)
             mol_obj = mol_cls(
                         num_moles=job.sp.num_mols,
@@ -159,4 +159,4 @@ def run_sim(job):
         print("Simulation finished.")
 
 if __name__ == "__main__":
-    MyProject().main(i)
+    MyProject().main()
