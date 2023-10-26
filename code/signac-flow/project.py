@@ -72,7 +72,7 @@ def run_sim(job):
     import numpy as np
     import flowermd
     from flowermd.base.system import Pack
-    from flowermd.base.simulation import Simulaton
+    from flowermd.base.simulation import Simulation
     with job:
         print("JOB ID NUMBER:")
         print(job.id)
