@@ -73,27 +73,29 @@ def run_sim(job):
     import flowermd
     from flowermd.base.system import Pack
     from flowermd.base.simulation import Simulation
+    from flowermd.library.polymers import PPS
+    from flowermd.library import OPLS_AA_PPS
     with job:
         print("JOB ID NUMBER:")
         print(job.id)
         print("------------------------------------")
-        mol_obj_list = []
-        for m in job.sp.molecule:
-            mol_cls = getattr(flowermd.library.polymers, job.sp.molecule)
-            mol_obj = mol_cls(
-                        num_moles=job.sp.num_mols,
-                        lengths=job.sp.lengths,
-                        force_field=job.sp.forcefield
-                    )
-            mol_obj_list.append(mol_obj)
+        pps = PPS(num_mols=job.sp.num_mols, lengths=job.sp.lengths) 
         system = Pack(
-                    molecules=mol_obj_list,
+                    molecules=pps,
                     density=job.sp.density,
                     r_cut=job.sp.r_cut,
                     auto_scale=True,
                     remove_hydrogens=job.sp.remove_hydrogens,
                     remove_charges=job.sp.remove_charges
                 )
+        system.apply_forcefield(
+            force_field=OPLS_AA_PPS(),
+            auto_scale=True,
+            r_cut=job.sp.r_cut,
+            remove_hydrogens=job.sp.remove_hydrogens,
+            remove_charges=job.sp.remove_charges,
+            scale_charges=True
+        )
 
         gsd_path = job.fn("trajectory.gsd")
         log_path = job.fn("log.txt")
