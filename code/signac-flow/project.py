@@ -82,11 +82,7 @@ def run_sim(job):
         pps = PPS(num_mols=job.sp.num_mols, lengths=job.sp.lengths) 
         system = Pack(
                     molecules=pps,
-                    density=job.sp.density,
-                    r_cut=job.sp.r_cut,
-                    auto_scale=True,
-                    remove_hydrogens=job.sp.remove_hydrogens,
-                    remove_charges=job.sp.remove_charges
+                    density=job.sp.density
                 )
         system.apply_forcefield(
             force_field=OPLS_AA_PPS(),
@@ -116,32 +112,32 @@ def run_sim(job):
         # Store unit information in job doc
         tau_kT = sim.dt * job.sp.tau_kT
         job.doc.tau_kT = tau_kT
-        job.doc.target_box = target_box
-        job.doc.ref_mass = sim.reference_mass.to("amu").value()
+        job.doc.ref_mass = sim.reference_mass.to("amu").value
         job.doc.ref_mass_units = "amu"
-        job.doc.ref_energy = sim.reference_energy.to("kJ/mol").value()
+        job.doc.ref_energy = sim.reference_energy.to("kJ/mol").value
         job.doc.ref_energy_units = "kJ/mol"
-        job.doc.ref_length = sim.reference_length.to("angstrom").value()
+        job.doc.ref_length = sim.reference_length.to("angstrom").value
         job.doc.ref_length_units = "angstrom"
-        job.doc.real_time_step = sim.real_timestep.to("fs").value()
+        job.doc.real_time_step = sim.real_timestep.to("fs").value
         job.doc.real_time_units = "fs"
         job.doc.n_steps = job.sp.n_steps
         job.doc.simulation_time = job.doc.real_time_step * job.doc.n_steps
         job.doc.shrink_time = job.doc.real_time_step * job.sp.shrink_n_steps
         # Set up stuff for shrinking volume step
         print("Running shrink step.")
-        target_box = system.target_box / system.reference_distance.to("angstrom").value()
-        shrink_kT_ramp = sim.kT_ramp(
+        target_box = system.target_box / system.reference_length.to("angstrom").value
+        job.doc.target_box = target_box
+        shrink_temperature_ramp = sim.temperature_ramp(
                 n_steps=job.sp.shrink_n_steps,
                 kT_start=job.sp.shrink_kT,
                 kT_final=job.sp.kT
         )
         sim.run_update_volume(
-                final_box=target_box,
+                final_box_lengths=target_box,
                 n_steps=job.sp.shrink_n_steps,
                 period=job.sp.shrink_period,
                 tau_kt=tau_kT,
-                kT=shrink_kT_ramp
+                kT=shrink_temperature_ramp
         )
         print("Shrink step finished.")
         print("Running simulation.")
